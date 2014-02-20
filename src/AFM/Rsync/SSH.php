@@ -151,7 +151,7 @@ class SSH extends AbstractProtocol
 		$command = new Command($this->executable);
 
 		if($this->port != 22)
-			$command->setArgument("p", $this->port);
+			$command->setArgument("p", (int)$this->port);
 
 		if(!is_null($this->publicKey))
 			$command->setArgument("i", $this->publicKey);

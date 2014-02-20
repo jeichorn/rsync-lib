@@ -59,7 +59,7 @@ class SSHTest extends \PHPUnit_Framework_TestCase
 		$ssh = new SSH(array('username' => 'test', 'host' => 'test.com', 'port' => 231));
 
 		$actual = $ssh->getCommand();
-		$expected = "ssh -p '231' test@test.com";
+		$expected = "ssh -p 231 test@test.com";
 
 		$this->assertEquals($expected, $actual);
 	}
@@ -105,7 +105,7 @@ class SSHTest extends \PHPUnit_Framework_TestCase
 		$ssh = new SSH(array('username' => 'test', 'host' => 'test.com', 'port' => 231, 'public_key' => '/dev/null'));
 
 		$actual = $ssh->getConnectionOptions();
-		$expected = "ssh -p '231' -i '/dev/null'";
+		$expected = "ssh -p 231 -i '/dev/null'";
 
 		$this->assertEquals($expected, $actual);
 	}

@@ -85,12 +85,23 @@ class RsyncTest extends \PHPUnit_Framework_TestCase
 		$command = $rsync->getCommand(".", "/home/test/");
 
 		$actual = $command->getCommand();
-		$expected = "/usr/bin/rsync -La --rsh 'ssh -p '2342'' . test@test.com:/home/test/";
+		$expected = "/usr/bin/rsync -La --rsh 'ssh -p 2342' . test@test.com:/home/test/";
 
 		$this->assertEquals($expected, $actual);
 
 		$this->markTestIncomplete("Tested SSH connection string, but cannot test real SSH connection sync!");
 	}
+
+    public function testRepeatedExclude()
+    {
+        $rsync = new Rsync(array('exclude' => array('one','two')));
+        $command = $rsync->getCommand(".",".");
+
+        $actual = $command->getCommand();
+        $expected = "/usr/bin/rsync -La --exclude 'one' --exclude 'two' . .";
+
+        $this->assertEquals($expected, $actual);
+    }
 
 	public function getTargetDir()
 	{

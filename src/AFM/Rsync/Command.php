@@ -111,7 +111,10 @@ class Command
      */
     public function addArgument($name, $value)
     {
-		$this->arguments[$name.count($this->arguments)] = $value;
+        if (!isset($this->arguments[$name]))
+            $this->arguments[$name] = array();
+
+		$this->arguments[$name][] = $value;
     }
 
 	/**
@@ -145,13 +148,26 @@ class Command
 
 		foreach($this->arguments as $argument => $value)
 		{
-			if(strlen($argument) == 1)
-			{
-				$command[] = "-" . $argument . " '". $value. "'";
-			}
+            if (is_array($value))
+            {
+                foreach($value as $v)
+                {
+                    $command[] = "--" . $argument . " " . escapeshellarg($v);
+                }
+            }
 			else
 			{
-				$command[] = "--" . (is_string($value) || is_int($value) ? $argument . " '" . $value. "'" : $argument);
+                if(strlen($argument) == 1)
+                    $arg = "-$argument";
+                else
+                    $arg = "--$argument";
+
+                if (is_int($value))
+                    $arg .= " $value";
+                elseif (is_string($value))
+                    $arg .= " ".escapeshellarg($value);
+
+                $command[] = $arg;
 			}
 		}
 
