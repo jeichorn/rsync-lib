@@ -83,7 +83,7 @@ class CommandTest extends \PHPUnit_Framework_TestCase
 	{
 		$command = new Command("test");
 
-		$command->addArgument("test");
+		$command->setArgument("test");
 
 		$actual = $command->getCommand();
 		$expected = "test --test";
@@ -95,7 +95,7 @@ class CommandTest extends \PHPUnit_Framework_TestCase
 	{
 		$command = new Command("test");
 
-		$command->addArgument("test", "value");
+		$command->setArgument("test", "value");
 
 		$actual = $command->getCommand();
 		$expected = "test --test 'value'";

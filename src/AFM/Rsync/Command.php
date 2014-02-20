@@ -86,7 +86,10 @@ class Command
 	}
 
 	/**
-	 * Adds an argument to the command. If the argument
+     * Adds an argument to the command. 
+     *
+     * Use for arguments that can only be used once
+     * If the argument
 	 * is more than one letter, "-- " will be appended before
 	 * if not, it will act as an option with a value:
 	 *
@@ -98,10 +101,18 @@ class Command
 	 * @param $name
 	 * @param bool $value
 	 */
-	public function addArgument($name, $value = true)
+	public function setArgument($name, $value = true)
 	{
 		$this->arguments[$name] = $value;
 	}
+
+    /**
+     * Adds a argument to the command, use for repeated arguments
+     */
+    public function addArgument($name, $value)
+    {
+		$this->arguments[$name.count($this->arguments)] = $value;
+    }
 
 	/**
 	 * @param $executable

@@ -1,5 +1,5 @@
 {
-	"name": "albertofem/rsync-lib",
+	"name": "jeichorn/rsync-lib",
 	"description": "A simple PHP rsync wrapper library",
 	"keywords": ["rsync library"],
 	"homepage": "http://albertofem.com",

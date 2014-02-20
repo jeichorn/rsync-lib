@@ -296,10 +296,10 @@ class Rsync extends AbstractProtocol
 			$command->addOption("v");
 
 		if($this->deleteFromTarget)
-			$command->addArgument('delete');
+			$command->setArgument('delete');
 
 		if($this->deleteExcluded)
-			$command->addArgument('delete-excluded');
+			$command->setArgument('delete-excluded');
 
 		if(!empty($this->exclude))
 		{
@@ -315,7 +315,7 @@ class Rsync extends AbstractProtocol
 		if(!is_null($this->ssh))
 		{
 			$ssh = $this->ssh->getConnectionOptions();
-			$command->addArgument("rsh", $ssh);
+			$command->setArgument("rsh", $ssh);
 		}
 
 		$command->addParameter($origin);
