@@ -365,7 +365,7 @@ class Rsync extends AbstractProtocol
 	/**
 	 * @param bool $stats
 	 */
-	public function setStats($Stats)
+	public function setStats($stats)
 	{
 		$this->stats = $stats;
 	}
