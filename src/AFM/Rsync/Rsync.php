@@ -85,6 +85,11 @@ class Rsync extends AbstractProtocol
 	protected $times = false;
 
 	/**
+	 * @var stats
+	 */
+	protected $stats = false;
+
+	/**
 	 * @var bool
 	 */
 	protected $showOutput = true;
@@ -124,6 +129,7 @@ class Rsync extends AbstractProtocol
 		$this->setOption($options, 'excludeFrom', 'setExcludeFrom');
 		$this->setOption($options, 'recursive', 'setRecursive');
 		$this->setOption($options, 'times', 'setTimes');
+		$this->setOption($options, 'stats', 'setStats');
 		$this->setOption($options, 'show_output', 'setShowOutput');
 		$this->setOption($options, 'ssh', 'setSshOptions');
 		$this->setOption($options, 'compression', 'setCompression');
@@ -357,6 +363,24 @@ class Rsync extends AbstractProtocol
 	}
 
 	/**
+	 * @param bool $stats
+	 */
+	public function setStats($Stats)
+	{
+		$this->stats = $stats;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getStats()
+	{
+		return $this->stats;
+	}
+
+
+
+	/**
 	 * @param $showOutput
 	 */
 	public function setShowOutput($showOutput)
@@ -454,6 +478,9 @@ class Rsync extends AbstractProtocol
 
 		if($this->times)
 			$command->addArgument('times');
+
+		if($this->stats)
+			$command->addArgument('stats');
 
 		if($this->deleteFromTarget)
 			$command->setArgument('delete');
