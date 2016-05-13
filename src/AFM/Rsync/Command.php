@@ -109,7 +109,7 @@ class Command
     /**
      * Adds a argument to the command, use for repeated arguments
      */
-    public function addArgument($name, $value)
+    public function addArgument($name, $value = true)
     {
         if (!isset($this->arguments[$name]))
             $this->arguments[$name] = array();
@@ -148,18 +148,21 @@ class Command
 			$command[] = "-" . implode($this->options);
 
 		foreach($this->arguments as $argument => $values)
-		{
-			foreach($values as $value)
-			{
-				if(strlen($argument) == 1)
-				{
-                    $command[] = "-" . $argument . " ". escapeshellarg($value);
-				}
-				else
-				{
-					$command[] = "--" . (is_string($value) || is_int($value) ? $argument . " " . escapeshellarg($value) : $argument);
-				}
-			}
+        {
+            foreach($values as $v)
+            {
+                if(strlen($argument) == 1)
+                    $arg = "-$argument";
+                else
+                    $arg = "--$argument";
+
+                if (is_int($v))
+                    $arg .= " $v";
+                elseif (is_string($v))
+                    $arg .= " ".escapeshellarg($v);
+
+                $command[] = $arg;
+            }
 		}
 
 		if(!empty($this->parameters))
