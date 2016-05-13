@@ -99,11 +99,11 @@ class Command
 	 * </pre>
 	 *
 	 * @param $name
-	 * @param bool $value
+	 * @param bool|mixed $value
 	 */
 	public function setArgument($name, $value = true)
 	{
-		$this->arguments[$name] = $value;
+		$this->arguments[$name][] = $value;
 	}
 
     /**
@@ -141,33 +141,24 @@ class Command
 	 */
 	protected function constructCommand()
 	{
+        $command = array();
 		$command[] = $this->executable;
 
 		if(!empty($this->options))
 			$command[] = "-" . implode($this->options);
 
-		foreach($this->arguments as $argument => $value)
+		foreach($this->arguments as $argument => $values)
 		{
-            if (is_array($value))
-            {
-                foreach($value as $v)
-                {
-                    $command[] = "--" . $argument . " " . escapeshellarg($v);
-                }
-            }
-			else
+			foreach($values as $value)
 			{
-                if(strlen($argument) == 1)
-                    $arg = "-$argument";
-                else
-                    $arg = "--$argument";
-
-                if (is_int($value))
-                    $arg .= " $value";
-                elseif (is_string($value))
-                    $arg .= " ".escapeshellarg($value);
-
-                $command[] = $arg;
+				if(strlen($argument) == 1)
+				{
+                    $command[] = "-" . $argument . " ". escapeshellarg($value);
+				}
+				else
+				{
+					$command[] = "--" . (is_string($value) || is_int($value) ? $argument . " " . escapeshellarg($value) : $argument);
+				}
 			}
 		}
 

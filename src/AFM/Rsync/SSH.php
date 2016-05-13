@@ -52,6 +52,7 @@ class SSH extends AbstractProtocol
 	 */
 	public function __construct(Array $options = array())
 	{
+		$this->setOption($options, 'executable', 'setExecutable');
 		$this->setOption($options, 'host', 'setHost');
 		$this->setOption($options, 'port', 'setPort');
 		$this->setOption($options, 'username', 'setUsername');
@@ -81,8 +82,8 @@ class SSH extends AbstractProtocol
 	 */
 	public function setPort($port)
 	{
-		if(!is_numeric($port))
-			throw new \InvalidArgumentException("SSH port must be numeric");
+		if(!is_int($port))
+			throw new \InvalidArgumentException("SSH port must be an integer");
 
 		$this->port = $port;
 	}

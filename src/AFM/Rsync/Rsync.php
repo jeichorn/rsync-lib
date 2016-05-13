@@ -27,6 +27,16 @@ class Rsync extends AbstractProtocol
 	/**
 	 * @var bool
 	 */
+	protected $archive = true;
+
+	/**
+	 * @var bool
+	 */
+	protected $skipNewerFiles = false;
+
+	/**
+	 * @var bool
+	 */
 	protected $followSymLinks = true;
 
 	/**
@@ -60,6 +70,11 @@ class Rsync extends AbstractProtocol
 	protected $exclude = array();
 
 	/**
+	 * @var string
+	 */
+	protected $excludeFrom = null;
+
+	/**
 	 * @var bool
 	 */
 	protected $recursive = true;
@@ -67,7 +82,22 @@ class Rsync extends AbstractProtocol
 	/**
 	 * @var bool
 	 */
+	protected $times = false;
+
+	/**
+	 * @var bool
+	 */
 	protected $showOutput = true;
+
+	/**
+	 * @var bool
+	 */
+	protected $compression = false;
+	
+	/**
+	 * @var bool
+	 */
+	protected $remoteOrigin = false;
 
 	/**
 	 * @var SSH
@@ -82,6 +112,8 @@ class Rsync extends AbstractProtocol
 	public function __construct(Array $options = array())
 	{
 		$this->setOption($options, 'executable', 'setExecutable');
+		$this->setOption($options, 'archive', 'setArchive');
+		$this->setOption($options, 'update', 'setSkipNewerFiles');
 		$this->setOption($options, 'follow_symlinks', 'setFollowSymLinks');
 		$this->setOption($options, 'dry_run', 'setDryRun');
 		$this->setOption($options, 'option_parameters', 'setOptionalParameters');
@@ -89,9 +121,13 @@ class Rsync extends AbstractProtocol
 		$this->setOption($options, 'delete_from_target', 'setDeleteFromTarget');
 		$this->setOption($options, 'delete_excluded', 'setDeleteExcluded');
 		$this->setOption($options, 'exclude', 'setExclude');
+		$this->setOption($options, 'excludeFrom', 'setExcludeFrom');
 		$this->setOption($options, 'recursive', 'setRecursive');
+		$this->setOption($options, 'times', 'setTimes');
 		$this->setOption($options, 'show_output', 'setShowOutput');
 		$this->setOption($options, 'ssh', 'setSshOptions');
+		$this->setOption($options, 'compression', 'setCompression');
+		$this->setOption($options, 'remote_origin', 'setRemoteOrigin');
 	}
 
 	/**
@@ -128,6 +164,38 @@ class Rsync extends AbstractProtocol
 		return $this->executable;
 	}
 
+	/**
+	 * @return bool
+	 */
+	public function getArchive()
+	{
+		return $this->archive;
+	}
+
+	/**
+	 * @param $archive
+	 */
+	public function setArchive($archive)
+	{
+		$this->archive = $archive;
+	}
+
+	/**
+	 * @param $skipNewerFiles
+	 */
+	public function setSkipNewerFiles($skipNewerFiles)
+	{
+		$this->skipNewerFiles = $skipNewerFiles;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getSkipNewerFiles()
+	{
+		return $this->skipNewerFiles;
+	}
+	
 	/**
 	 * @param $followSymLinks
 	 */
@@ -241,6 +309,22 @@ class Rsync extends AbstractProtocol
 	}
 
 	/**
+	 * @param $exclude
+	 */
+	public function setExcludeFrom($excludeFrom)
+	{
+		$this->excludeFrom = $excludeFrom;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getExcludeFrom()
+	{
+		return $this->excludeFrom;
+	}
+
+	/**
 	 * @param $recursive
 	 */
 	public function setRecursive($recursive)
@@ -254,6 +338,22 @@ class Rsync extends AbstractProtocol
 	public function getRecursive()
 	{
 		return $this->recursive;
+	}
+
+	/**
+	 * @param bool $times
+	 */
+	public function setTimes($times)
+	{
+		$this->times = $times;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getTimes()
+	{
+		return $this->times;
 	}
 
 	/**
@@ -273,6 +373,39 @@ class Rsync extends AbstractProtocol
 	}
 
 	/**
+	 * @param $compression
+	 */
+	public function setCompression($compression)
+	{
+		$this->compression = $compression;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getCompression()
+	{
+		return $this->compression;
+	}
+	
+	/**
+	 * @param $remoteOrigin
+	 */
+	public function setRemoteOrigin($remoteOrigin)
+	{
+		$this->remoteOrigin = (bool) $remoteOrigin;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getRemoteOrigin()
+	{
+		return $this->remoteOrigin;
+	}
+
+
+	/**
 	 * Gets command generated for this current
 	 * rsync configuration. You can use it to test
 	 * or execute it later without using the sync method
@@ -286,6 +419,9 @@ class Rsync extends AbstractProtocol
 	{
 		$command = new Command($this->executable);
 
+		if($this->skipNewerFiles)
+			$command->addOption("u");
+
 		if($this->followSymLinks)
 			$command->addOption("L");
 
@@ -294,6 +430,30 @@ class Rsync extends AbstractProtocol
 
 		if($this->verbose)
 			$command->addOption("v");
+
+		if($this->compression)
+			$command->addOption("z");
+
+		// add any optional options we've specified
+		$extra_options = $this->getOptionalParameters();
+		if(!empty($extra_options))
+		{
+			// if the extra options were given as a flat string, then convert it to an array
+			if (is_string($extra_options))
+				$extra_options = str_split($extra_options);
+
+			// add each extra option we've defined.
+			if (is_array($extra_options))
+			{
+				foreach($extra_options as $option)
+				{
+					$command->addOption($option);
+				}
+			}
+		}
+
+		if($this->times)
+			$command->addArgument('times');
 
 		if($this->deleteFromTarget)
 			$command->setArgument('delete');
@@ -309,8 +469,16 @@ class Rsync extends AbstractProtocol
 			}
 		}
 
-		if($this->recursive)
+		if(!empty($this->excludeFrom))
+		{
+			$command->addArgument('exclude-from', $this->excludeFrom);
+		}
+
+		if($this->archive)
 			$command->addOption("a");
+
+		if(!$this->archive && $this->recursive)
+			$command->addOption("r");
 
 		if(!is_null($this->ssh))
 		{
@@ -318,12 +486,21 @@ class Rsync extends AbstractProtocol
 			$command->setArgument("rsh", $ssh);
 		}
 
-		$command->addParameter($origin);
-
 		if(is_null($this->ssh))
+		{
+			$command->addParameter($origin);
 			$command->addParameter($target);
+		}	
+		elseif($this->remoteOrigin)
+		{
+			$command->addParameter($this->ssh->getHostConnection() . ":" .$origin);
+			$command->addParameter($target);
+		}
 		else
+		{
+			$command->addParameter($origin);
 			$command->addParameter($this->ssh->getHostConnection() . ":" .$target);
+		}
 
 		return $command;
 	}
