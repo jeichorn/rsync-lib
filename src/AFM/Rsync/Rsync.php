@@ -129,6 +129,16 @@ class Rsync extends AbstractProtocol
 	 */
 	protected $ssh;
 
+    /**
+     * @var string
+     */
+    protected $chmod;
+
+    /**
+     * @var string
+     */
+    protected $chown;
+
 	/**
 	 * Injects and validates config
 	 *
@@ -158,6 +168,8 @@ class Rsync extends AbstractProtocol
 		$this->setOption($options, 'info', 'setInfo');
 		$this->setOption($options, 'compare_dest', 'setCompareDest');
 		$this->setOption($options, 'prune_empty_dirs', 'setPruneEmptyDirs');
+		$this->setOption($options, 'chmod', 'setChmod');
+		$this->setOption($options, 'chown', 'setChown');
 	}
 
 	/**
@@ -506,7 +518,7 @@ class Rsync extends AbstractProtocol
 	 */
 	public function setCompareDest($dest)
 	{
-	$this->compareDest = $dest;
+        $this->compareDest = $dest;
 	}
 
 	/**
@@ -514,8 +526,44 @@ class Rsync extends AbstractProtocol
 	 */
 	public function getCompareDest()
 	{
-	return $this->compareDest;
+        return $this->compareDest;
 	}
+
+	/**
+	 * @param string
+	 */
+	public function setChown($chown)
+	{
+        $this->chown = $chown;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getChown()
+	{
+        return $this->chown;
+	}
+
+
+	/**
+	 * @param string
+	 */
+	public function setChmod($chmod)
+	{
+        $this->chmod = $chmod;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getChmod()
+	{
+        return $this->chmod;
+	}
+
+
 
 	/**
 	 * Gets command generated for this current
@@ -606,6 +654,12 @@ class Rsync extends AbstractProtocol
 
 		if($this->pruneEmptyDirs)
 			$command->addArgument('prune-empty-dirs');
+
+        if ($this->chown)
+            $command->addArgument('chown', $this->chown);
+
+        if ($this->chmod)
+            $command->addArgument('chmod', $this->chmod);
 
 		if(!is_null($this->ssh))
 		{
