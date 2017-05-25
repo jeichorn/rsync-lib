@@ -98,11 +98,31 @@ class Rsync extends AbstractProtocol
 	 * @var bool
 	 */
 	protected $compression = false;
-	
+
 	/**
 	 * @var bool
 	 */
 	protected $remoteOrigin = false;
+
+	/**
+	 * @var bool
+	 */
+	protected $removeSource = false;
+
+	/**
+	 * @var bool
+	 */
+	protected $info = false;
+
+	/**
+	 * @var bool
+	 */
+	protected $compareDest = false;
+
+	/**
+	 * @var bool
+	 */
+	protected $pruneEmptyDirs = false;
 
 	/**
 	 * @var SSH
@@ -134,6 +154,10 @@ class Rsync extends AbstractProtocol
 		$this->setOption($options, 'ssh', 'setSshOptions');
 		$this->setOption($options, 'compression', 'setCompression');
 		$this->setOption($options, 'remote_origin', 'setRemoteOrigin');
+		$this->setOption($options, 'remove_source', 'setRemoveSource');
+		$this->setOption($options, 'info', 'setInfo');
+		$this->setOption($options, 'compare_dest', 'setCompareDest');
+		$this->setOption($options, 'prune_empty_dirs', 'setPruneEmptyDirs');
 	}
 
 	/**
@@ -186,6 +210,23 @@ class Rsync extends AbstractProtocol
 		$this->archive = $archive;
 	}
 
+    /**
+	 * @return bool
+	 */
+    public function getPruneEmptyDirs()
+    {
+        return $this->pruneEmptyDirs;
+    }
+
+    /**
+	 * @param $pruneEmptyDirs
+	 */
+    public function setPruneEmptyDirs($pruneEmptyDirs)
+    {
+        $this->pruneEmptyDirs = $pruneEmptyDirs;
+    }
+
+
 	/**
 	 * @param $skipNewerFiles
 	 */
@@ -201,7 +242,7 @@ class Rsync extends AbstractProtocol
 	{
 		return $this->skipNewerFiles;
 	}
-	
+
 	/**
 	 * @param $followSymLinks
 	 */
@@ -411,7 +452,7 @@ class Rsync extends AbstractProtocol
 	{
 		return $this->compression;
 	}
-	
+
 	/**
 	 * @param $remoteOrigin
 	 */
@@ -428,6 +469,53 @@ class Rsync extends AbstractProtocol
 		return $this->remoteOrigin;
 	}
 
+	/**
+	 * @param $removeSource
+	 */
+	public function setRemoveSource($removeSource)
+	{
+		$this->removeSource = (bool) $removeSource;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getRemoveSource()
+	{
+		return $this->removeSource;
+	}
+
+	/**
+	 * @param $info
+	 */
+	public function setInfo($info)
+	{
+		$this->info = $info;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getInfo()
+	{
+		return $this->info;
+	}
+
+	/**
+	 * @param $dest
+	 */
+	public function setCompareDest($dest)
+	{
+	$this->compareDest = $dest;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getCompareDest()
+	{
+	return $this->compareDest;
+	}
 
 	/**
 	 * Gets command generated for this current
@@ -485,8 +573,17 @@ class Rsync extends AbstractProtocol
 		if($this->deleteFromTarget)
 			$command->setArgument('delete');
 
+		if($this->removeSource)
+			$command->addArgument('remove-source-files');
+
 		if($this->deleteExcluded)
 			$command->setArgument('delete-excluded');
+
+		if($this->info)
+			$command->addArgument('info', $this->info);
+
+		if ($this->compareDest)
+			$command->addArgument('compare-dest', $this->compareDest);
 
 		if(!empty($this->exclude))
 		{
@@ -507,6 +604,9 @@ class Rsync extends AbstractProtocol
 		if(!$this->archive && $this->recursive)
 			$command->addOption("r");
 
+		if($this->pruneEmptyDirs)
+			$command->addArgument('prune-empty-dirs');
+
 		if(!is_null($this->ssh))
 		{
 			$ssh = $this->ssh->getConnectionOptions();
@@ -517,7 +617,7 @@ class Rsync extends AbstractProtocol
 		{
 			$command->addParameter($origin);
 			$command->addParameter($target);
-		}	
+		}
 		elseif($this->remoteOrigin)
 		{
 			$command->addParameter($this->ssh->getHostConnection() . ":" .$origin);
