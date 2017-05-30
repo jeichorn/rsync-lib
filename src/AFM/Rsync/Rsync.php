@@ -139,6 +139,11 @@ class Rsync extends AbstractProtocol
      */
     protected $chown;
 
+    /**
+     * @var bool
+     */
+    protected $itemizeChanges = false;
+
 	/**
 	 * Injects and validates config
 	 *
@@ -170,6 +175,7 @@ class Rsync extends AbstractProtocol
 		$this->setOption($options, 'prune_empty_dirs', 'setPruneEmptyDirs');
 		$this->setOption($options, 'chmod', 'setChmod');
 		$this->setOption($options, 'chown', 'setChown');
+		$this->setOption($options, 'itemize_changes', 'setItemizeChanges');
 	}
 
 	/**
@@ -563,6 +569,22 @@ class Rsync extends AbstractProtocol
         return $this->chmod;
 	}
 
+    /**
+	 * @param bool
+	 */
+	public function setItemizeChanges($itemizeChanges)
+	{
+        $this->itemizeChanges = $itemizeChanges;
+	}
+
+
+	/**
+     * @return bool
+     */
+	public function getItemizeChanges()
+	{
+        return $this->itemizeChanges;
+	}
 
 
 	/**
@@ -660,6 +682,9 @@ class Rsync extends AbstractProtocol
 
         if ($this->chmod)
             $command->addArgument('chmod', $this->chmod);
+
+        if ($this->itemizeChanges)
+            $command->addArgument('itemize-changes');
 
 		if(!is_null($this->ssh))
 		{
