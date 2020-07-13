@@ -125,6 +125,26 @@ class Rsync extends AbstractProtocol
 	protected $pruneEmptyDirs = false;
 
 	/**
+	 * @var bool
+	 */
+	protected $omitDirTimes = false;
+
+    /**
+     * @var bool
+     */
+    protected $devices = false;
+
+    /**
+     * @var bool
+     */
+    protected $specials = false;
+
+    /**
+     * @var bool
+     */
+    protected $links = false;
+
+	/**
 	 * @var SSH
 	 */
 	protected $ssh;
@@ -163,6 +183,10 @@ class Rsync extends AbstractProtocol
 		$this->setOption($options, 'exclude', 'setExclude');
 		$this->setOption($options, 'excludeFrom', 'setExcludeFrom');
 		$this->setOption($options, 'recursive', 'setRecursive');
+		$this->setOption($options, 'omit_dir_times', 'setOmitDirTimes');
+		$this->setOption($options, 'devices', 'setDevices');
+		$this->setOption($options, 'specials', 'specials');
+		$this->setOption($options, 'links', 'links');
 		$this->setOption($options, 'times', 'setTimes');
 		$this->setOption($options, 'stats', 'setStats');
 		$this->setOption($options, 'show_output', 'setShowOutput');
@@ -260,6 +284,46 @@ class Rsync extends AbstractProtocol
 	{
 		return $this->skipNewerFiles;
 	}
+
+    public function getOmitDirTimes(): bool
+    {
+        return $this->omitDirTimes;
+    }
+
+    public function setOmitDirTimes(bool $omitDirTimes)
+    {
+        $this->omitDirTimes = $omitDirTimes;
+    }
+
+    public function getDevices(): bool
+    {
+        return $this->devices;
+    }
+
+    public function setDevices(bool $devices)
+    {
+        $this->devices = $devices;
+    }
+
+    public function getSpecials(): bool
+    {
+        return $this->specials;
+    }
+
+    public function setSpecials(bool $specials)
+    {
+        $this->specials = $specials;
+    }
+
+    public function getLinks(): bool
+    {
+        return $this->links;
+    }
+
+    public function setLinks(bool $links)
+    {
+        $this->links = $links;
+    }
 
 	/**
 	 * @param $followSymLinks
@@ -676,6 +740,18 @@ class Rsync extends AbstractProtocol
 
 		if($this->pruneEmptyDirs)
 			$command->addArgument('prune-empty-dirs');
+
+		if($this->omitDirTimes)
+			$command->addArgument('omit-dir-times');
+
+		if($this->devices)
+			$command->addArgument('devices');
+
+		if($this->specials)
+			$command->addArgument('specials');
+
+		if($this->links)
+			$command->addArgument('links');
 
         if ($this->chown)
             $command->addArgument('chown', $this->chown);

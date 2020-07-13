@@ -209,6 +209,50 @@ class RsyncTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($expected, $actual);
 	}
 
+	public function testRsyncWithOmitDirTimes()
+	{
+		$rsync = new Rsync();
+		$rsync->setOmitDirTimes(true);
+
+		$expected = "/usr/bin/rsync -La --omit-dir-times /origin /target";
+		$actual = $rsync->getCommand('/origin', '/target')->getCommand();
+
+		$this->assertEquals($expected, $actual);
+	}
+
+	public function testRsyncWithDevices()
+	{
+		$rsync = new Rsync();
+		$rsync->setDevices(true);
+
+		$expected = "/usr/bin/rsync -La --devices /origin /target";
+		$actual = $rsync->getCommand('/origin', '/target')->getCommand();
+
+		$this->assertEquals($expected, $actual);
+	}
+
+	public function testRsyncWithSpecials()
+	{
+		$rsync = new Rsync();
+		$rsync->setSpecials(true);
+
+		$expected = "/usr/bin/rsync -La --specials /origin /target";
+		$actual = $rsync->getCommand('/origin', '/target')->getCommand();
+
+		$this->assertEquals($expected, $actual);
+	}
+
+	public function testRsyncWithLinks()
+	{
+		$rsync = new Rsync();
+		$rsync->setLinks(true);
+
+		$expected = "/usr/bin/rsync -La --links /origin /target";
+		$actual = $rsync->getCommand('/origin', '/target')->getCommand();
+
+		$this->assertEquals($expected, $actual);
+	}
+
 	public function getTargetDir()
 	{
 		return self::$targetDir;
