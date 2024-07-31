@@ -781,8 +781,8 @@ class Rsync extends AbstractProtocol
         if ($this->chmod)
             $command->addArgument('chmod', $this->chmod);
 
-		if ($this->bwlimit)
-			$command->addArgument('bwlimit', $this->bwlimit);
+        if ($this->bwlimit)
+            $command->addArgument('bwlimit', $this->bwlimit);
 
         if ($this->itemizeChanges)
             $command->addArgument('itemize-changes');
