@@ -252,15 +252,15 @@ class RsyncTest extends \PHPUnit\Framework\TestCase
 	}
 
 	public function testRsyncWithBwLimit()
-    {
-        $rsync = new Rsync();
-        $rsync->setBwlimit('1000');
+	{
+		$rsync = new Rsync();
+		$rsync->setBwlimit('1000');
 
-        $expected = '/usr/bin/rsync -La --bwlimit \'1000\' /origin /target';
-        $actual = $rsync->getCommand('/origin', '/target')->getCommand();
+		$expected = '/usr/bin/rsync -La --bwlimit \'1000\' /origin /target';
+		$actual = $rsync->getCommand('/origin', '/target')->getCommand();
 
-        $this->assertEquals($expected, $actual);
-    }
+		$this->assertEquals($expected, $actual);
+	}
 
 	public function getTargetDir()
 	{
