@@ -163,6 +163,11 @@ class Rsync extends AbstractProtocol
      * @var bool
      */
     protected $itemizeChanges = false;
+	
+    /**
+     * @var string
+     */
+    protected $bwlimit;
 
 	/**
 	 * Injects and validates config
@@ -200,6 +205,7 @@ class Rsync extends AbstractProtocol
 		$this->setOption($options, 'chmod', 'setChmod');
 		$this->setOption($options, 'chown', 'setChown');
 		$this->setOption($options, 'itemize_changes', 'setItemizeChanges');
+		$this->setOption($options, 'bwlimit', 'setBwlimit');
 	}
 
 	/**
@@ -650,6 +656,22 @@ class Rsync extends AbstractProtocol
         return $this->itemizeChanges;
 	}
 
+	/**
+	 * @param string
+	 */
+	public function setBwlimit($bwlimit)
+	{
+        $this->bwlimit = $bwlimit;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getBwlimit()
+	{
+        return $this->bwlimit;
+	}
+
 
 	/**
 	 * Gets command generated for this current
@@ -758,6 +780,9 @@ class Rsync extends AbstractProtocol
 
         if ($this->chmod)
             $command->addArgument('chmod', $this->chmod);
+
+        if ($this->bwlimit)
+            $command->addArgument('bwlimit', $this->bwlimit);
 
         if ($this->itemizeChanges)
             $command->addArgument('itemize-changes');

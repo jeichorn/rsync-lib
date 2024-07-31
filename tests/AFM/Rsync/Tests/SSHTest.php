@@ -13,7 +13,7 @@ namespace AFM\Rsync\Tests;
 
 use AFM\Rsync\SSH;
 
-class SSHTest extends \PHPUnit_Framework_TestCase
+class SSHTest extends \PHPUnit\Framework\TestCase
 {
 	public function testValidConfiguration()
 	{
@@ -28,19 +28,15 @@ class SSHTest extends \PHPUnit_Framework_TestCase
 		unlink($fakePublicKey);
 	}
 
-	/**
- 	 * @expectedException \InvalidArgumentException
-	 */
 	public function testInvalidPublicKey()
 	{
+        $this->expectException(\InvalidArgumentException::class);
 		new SSH(array('public_key' => '/cant/read!'));
 	}
 
-	/**
-	 * @expectedException \InvalidArgumentException
-	 */
 	public function testInvalidPortNumber()
 	{
+        $this->expectException(\InvalidArgumentException::class);
 		new SSH(array('port' => 'not_a_number'));
 	}
 
@@ -110,21 +106,17 @@ class SSHTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($expected, $actual);
 	}
 
-	/**
-	 * @expectedException \InvalidArgumentException
-	 */
 	public function testGetConnectionNoUsername()
 	{
+        $this->expectException(\InvalidArgumentException::class);
 		$ssh = new SSH;
 
 		$ssh->getCommand();
 	}
 
-	/**
-	 * @expectedException \InvalidArgumentException
-	 */
 	public function testGetConnectionNoHost()
 	{
+        $this->expectException(\InvalidArgumentException::class);
 		$ssh = new SSH(array('username' => 'test'));
 
 		$ssh->getCommand();

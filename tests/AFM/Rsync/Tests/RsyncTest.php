@@ -13,18 +13,18 @@ namespace AFM\Rsync\Tests;
 
 use AFM\Rsync\Rsync;
 
-class RsyncTest extends \PHPUnit_Framework_TestCase
+class RsyncTest extends \PHPUnit\Framework\TestCase
 {
 	private static $targetDir;
 
 	private static $sourceDir;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		@rrmdir(self::$targetDir);
 	}
 
-	public static function setUpBeforeClass()
+	public static function setUpBeforeClass(): void
 	{
 		self::$sourceDir = __DIR__ . '/dir1';
 		self::$targetDir = __DIR__ . '/dir2';
@@ -32,7 +32,7 @@ class RsyncTest extends \PHPUnit_Framework_TestCase
 		@mkdir(self::$targetDir);
 	}
 
-	public static function tearDownAfterClass()
+	public static function tearDownAfterClass(): void
 	{
 		@rrmdir(self::$targetDir);
 	}
@@ -45,11 +45,9 @@ class RsyncTest extends \PHPUnit_Framework_TestCase
 		$this->assertTrue(true);
 	}
 
-	/**
- 	 * @expectedException \InvalidArgumentException
-	 */
 	public function testInvalidExecutableLocation()
 	{
+        $this->expectException(\InvalidArgumentException::class);
 		$rsync = new Rsync;
 		$rsync->setExecutable("/usr/not/exists/rsync!!");
 	}
@@ -248,6 +246,17 @@ class RsyncTest extends \PHPUnit_Framework_TestCase
 		$rsync->setLinks(true);
 
 		$expected = "/usr/bin/rsync -La --links /origin /target";
+		$actual = $rsync->getCommand('/origin', '/target')->getCommand();
+
+		$this->assertEquals($expected, $actual);
+	}
+
+	public function testRsyncWithBwLimit()
+	{
+		$rsync = new Rsync();
+		$rsync->setBwlimit('1000');
+
+		$expected = '/usr/bin/rsync -La --bwlimit \'1000\' /origin /target';
 		$actual = $rsync->getCommand('/origin', '/target')->getCommand();
 
 		$this->assertEquals($expected, $actual);

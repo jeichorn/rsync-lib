@@ -13,7 +13,7 @@ namespace AFM\Rsync\Tests;
 
 use AFM\Rsync\Command;
 
-class CommandTest extends \PHPUnit_Framework_TestCase
+class CommandTest extends \PHPUnit\Framework\TestCase
 {
 	public function testCommandWithOnlyOptions()
 	{
