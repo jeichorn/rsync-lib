@@ -1,5 +1,5 @@
-rsync-lib
-=========
+rsync-lib (fork of albertofem/rsync-lib)
+========================================       
 
 A simple PHP rsync wrapper library
 
@@ -10,11 +10,11 @@ Installation
 
 Require it in composer:
 
-    composer require albertofem/rsync-lib dev-master
+    composer require jeichorn/rsync-lib dev-master
 
 Install it:
 
-    composer update albertofem/rsync-lib
+    composer update jeichorn/rsync-lib
 
 If you want to run the tests:
 
